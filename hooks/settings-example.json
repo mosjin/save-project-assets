@@ -1,0 +1,31 @@
+{
+  "_comment": "Add these hooks to your ~/.claude/settings.json to auto-trigger save-project-assets",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"[save-project-assets active] Run /save-project-assets (or /save-project-assets-zh / -en) proactthunder: before commits, after fixes, on user request (save/record/保存/记录/update docs).\" }}'",
+            "timeout": 5,
+            "statusMessage": "Loading project context..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"[save-project-assets reminder] Before committing: consider running /save-project-assets to update TECH_LOG, CHANGELOG, memory, and comment on fixed GitHub issues.\"}}'",
+            "timeout": 3,
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
