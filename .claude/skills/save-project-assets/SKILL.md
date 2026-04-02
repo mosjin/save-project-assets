@@ -6,12 +6,13 @@ description: Use proactively when user confirms something works ("it works", "ve
 # Save Project Assets
 
 <!-- ─────────────────────────────────────────────
-  CONFIG — fill in once for your project
+  CONFIG — optional overrides only.
+  All values are auto-detected from git if not set here.
   ───────────────────────────────────────────── -->
 <!--
-  GITHUB_REPO   = owner/repo  (e.g. mosjin/DiskCleaner)
-  DOCS_DIR      = relative path to your docs folder (e.g. docs/)
-  BRANCH        = default branch  (e.g. main)
+  GITHUB_REPO = owner/repo   (override only — auto-detected from git remote)
+  DOCS_DIR    = docs/        (override only — auto-detected by checking ./docs/)
+  BRANCH      = main         (override only — auto-detected from git branch)
 -->
 
 ## Overview
@@ -62,6 +63,33 @@ Before doing anything, answer these questions:
 **If all answers are NO → stop immediately.** Say: "Nothing new to save this session."
 
 Only continue to Step 1 if at least one answer is YES.
+
+---
+
+## Step 0b: Auto-Detect Project Context
+
+Before writing anything, resolve these values (use CONFIG overrides if set, otherwise detect):
+
+```bash
+# GitHub repo  (e.g. owner/repo)
+git remote get-url origin
+# → parse: https://github.com/owner/repo.git  OR  git@github.com:owner/repo.git
+# → extract: owner/repo
+
+# Current branch
+git branch --show-current
+
+# Docs directory — check in order:
+# 1. docs/   2. doc/   3. ./ (project root)
+ls docs/ 2>/dev/null || ls doc/ 2>/dev/null || echo "use project root"
+```
+
+Store the resolved values as:
+- `GITHUB_REPO` = e.g. `myorg/myrepo`
+- `BRANCH` = e.g. `main` or `feature/xyz`
+- `DOCS_DIR` = e.g. `docs/` or `./`
+
+Use these in all subsequent steps. If `git remote get-url origin` fails (no remote), skip Step 4 (GitHub comments) silently.
 
 ---
 
@@ -213,16 +241,17 @@ On the first message of a new session:
 
 ---
 
-## Asset Locations (customize for your project)
+## Asset Locations (all auto-detected)
 
-| Asset | Default Path |
-|-------|-------------|
-| Tech lessons | `docs/TECH_LOG.md` |
-| Changelog | `docs/CHANGELOG.md` |
-| Ideas | `docs/IDEAS.md` |
-| Architecture | `docs/ARCHITECTURE.md` |
-| Memory (auto) | `~/.claude/projects/{sanitized-cwd}/memory/MEMORY.md` |
-| GitHub repo | _(set YOUR_GITHUB_REPO in config above)_ |
+| Asset | Auto-detected path |
+|-------|-------------------|
+| Tech lessons | `{DOCS_DIR}/TECH_LOG.md` |
+| Changelog | `{DOCS_DIR}/CHANGELOG.md` |
+| Ideas | `{DOCS_DIR}/IDEAS.md` |
+| Architecture | `{DOCS_DIR}/ARCHITECTURE.md` |
+| Memory | `~/.claude/projects/{sanitized-cwd}/memory/MEMORY.md` |
+| GitHub repo | parsed from `git remote get-url origin` |
+| Branch | from `git branch --show-current` |
 
 ---
 

@@ -20,6 +20,8 @@
 
 save-project-assets 以 Claude Code 插件市场的形式托管在 GitHub 上。
 
+### 推荐方式：Plugin 安装（两条命令）
+
 **第一步：添加插件市场**
 
 ```
@@ -106,15 +108,22 @@ python install.py
 
 ---
 
-## 配置
+## 配置（选填）
 
-安装后打开 SKILL.md，填写顶部 CONFIG 块：
+所有配置项均**自动从 git 检测**，大多数情况下无需手动配置。
+
+Skill 会自动识别：
+- **GitHub 仓库** — 从 `git remote get-url origin` 解析
+- **当前分支** — 从 `git branch --show-current` 读取
+- **文档目录** — 依次检测 `docs/`、`doc/`、项目根目录
+
+如需覆盖，打开安装后的 SKILL.md，取消注释 CONFIG 块：
 
 ```markdown
-<!-- CONFIG
-  GITHUB_REPO = owner/repo   例：myorg/myrepo
-  DOCS_DIR    = docs/
-  BRANCH      = main
+<!-- 配置 — 选填，仅需覆盖自动检测值时填写
+  GITHUB_REPO = owner/repo   （选填，自动从 git remote 检测）
+  DOCS_DIR    = docs/        （选填，自动检测 ./docs/ 是否存在）
+  BRANCH      = main         （选填，自动从 git branch 检测）
 -->
 ```
 

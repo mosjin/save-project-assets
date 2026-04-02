@@ -20,6 +20,8 @@ Three variants: **中文 (zh)** · **English (en)** · **auto-detect (default)**
 
 Hosted as a Claude Code plugin marketplace on GitHub.
 
+### Recommended: Plugin install (2 commands)
+
 **Step 1: Add the marketplace**
 
 ```
@@ -106,15 +108,22 @@ Then `/reload-plugins`.
 
 ---
 
-## Configuration
+## Configuration (optional)
 
-Open the installed SKILL.md and fill in the CONFIG block at the top:
+All values are **auto-detected from git** — no configuration required in most cases.
+
+The skill automatically detects:
+- **GitHub repo** — from `git remote get-url origin`
+- **Current branch** — from `git branch --show-current`
+- **Docs directory** — checks `docs/`, then `doc/`, then project root
+
+To override, open the installed SKILL.md and uncomment the CONFIG block:
 
 ```markdown
-<!-- CONFIG
-  GITHUB_REPO = owner/repo   e.g. myorg/myrepo
-  DOCS_DIR    = docs/
-  BRANCH      = main
+<!-- CONFIG — optional overrides only
+  GITHUB_REPO = owner/repo   (override only — auto-detected from git remote)
+  DOCS_DIR    = docs/        (override only — auto-detected by checking ./docs/)
+  BRANCH      = main         (override only — auto-detected from git branch)
 -->
 ```
 
