@@ -3,7 +3,7 @@
 > **Proactively save all project knowledge at commit time or on demand.**  
 > **在提交代码时或按需主动保存所有项目知识。**
 
-A [Claude Code](https://claude.ai/code) skill that captures and persists everything your AI assistant learns during a session:
+A [Claude Code](https://claude.ai/code) skill — captures and persists everything learned during a session:
 
 - 📋 **TECH_LOG** — engineering lessons & root-cause analyses  
 - 📝 **CHANGELOG** — feature status & fix records  
@@ -15,20 +15,32 @@ Bilingual: **中文 (zh)** + **English (en)** + **auto-detect (default)**
 
 ---
 
-## Quick Install / 快速安装
+## Install / 安装
 
-### Option A — Plugin (one command)
+### ✅ Easiest: one command + `/reload-plugins` (2 steps)
 
-Add to your `~/.claude/settings.json`:
+```bash
+# clone once, run once
+git clone https://github.com/mosjin/save-project-assets
+cd save-project-assets
+python install.py
+```
+
+Then inside Claude Code: **`/reload-plugins`** — done. ✓
+
+To uninstall: `python install.py --remove` + `/reload-plugins`
+
+---
+
+### Option B: manual JSON (for power users)
+
+Add to `~/.claude/settings.json`:
 
 ```json
 {
   "extraKnownMarketplaces": {
     "save-project-assets": {
-      "source": {
-        "source": "github",
-        "repo": "mosjin/save-project-assets"
-      }
+      "source": { "source": "github", "repo": "mosjin/save-project-assets" }
     }
   },
   "enabledPlugins": {
@@ -37,54 +49,32 @@ Add to your `~/.claude/settings.json`:
 }
 ```
 
-Then run `/reload-plugins` in Claude Code.
-
-### Option B — Manual copy
-
-Copy the skill file(s) you want into `~/.claude/skills/`:
-
-```bash
-# Default (bilingual, auto-detect)
-mkdir -p ~/.claude/skills/save-project-assets
-curl -o ~/.claude/skills/save-project-assets/SKILL.md \
-  https://raw.githubusercontent.com/mosjin/save-project-assets/main/.claude/skills/save-project-assets/SKILL.md
-
-# Chinese only / 仅中文
-mkdir -p ~/.claude/skills/save-project-assets-zh
-curl -o ~/.claude/skills/save-project-assets-zh/SKILL.md \
-  https://raw.githubusercontent.com/mosjin/save-project-assets/main/.claude/skills/save-project-assets-zh/SKILL.md
-
-# English only
-mkdir -p ~/.claude/skills/save-project-assets-en
-curl -o ~/.claude/skills/save-project-assets-en/SKILL.md \
-  https://raw.githubusercontent.com/mosjin/save-project-assets/main/.claude/skills/save-project-assets-en/SKILL.md
-```
+Then `/reload-plugins`.
 
 ---
 
-## Usage / 使用方式
+### Option C: copy one file (no plugin system)
 
-### Manual invocation
+```bash
+mkdir -p ~/.claude/skills/save-project-assets
+curl -o ~/.claude/skills/save-project-assets/SKILL.md \
+  https://raw.githubusercontent.com/mosjin/save-project-assets/main/.claude/skills/save-project-assets/SKILL.md
+```
+
+No reload needed — available immediately.
+
+---
+
+## Usage / 使用
 
 ```
-/save-project-assets        # auto-detect language
-/save-project-assets-zh     # Chinese / 中文
+/save-project-assets        # auto language / 自动语言
+/save-project-assets-zh     # 中文
 /save-project-assets-en     # English
 ```
 
-### Auto-trigger (no command needed)
-
-The skill fires automatically when:
-
-- You say: **save · record · assets · update docs · update memory**  
-- 你说：**保存 · 记录 · 保存资产 · 更新文档 · 更新记忆**
-
-### Optional: Hooks for commit-time reminders
-
-Copy `hooks/settings-example.json` entries into your `~/.claude/settings.json` to get:
-
-- **SessionStart hook** — injects a reminder into Claude's context every session
-- **PreToolUse hook** — reminds Claude to save before `git commit`
+**Auto-trigger** (no command needed) when you say:  
+`save` · `record` · `保存` · `记录` · `update docs` · `update memory` · `保存资产`
 
 ---
 
@@ -92,57 +82,64 @@ Copy `hooks/settings-example.json` entries into your `~/.claude/settings.json` t
 
 | Step | Action |
 |------|--------|
-| 1 | Harvest session knowledge |
-| 2 | Update `docs/TECH_LOG.md` with lessons |
-| 3 | Update `docs/CHANGELOG.md` with feature status |
-| 4 | Comment on confirmed-fixed GitHub issues |
-| 5 | Update `docs/IDEAS.md` with new ideas |
-| 6 | Update Claude Code auto-memory (MEMORY.md) |
+| 1 | Harvest session knowledge / 采集会话知识 |
+| 2 | Update `docs/TECH_LOG.md` with lessons / 更新技术日志 |
+| 3 | Update `docs/CHANGELOG.md` with feature status / 更新变更记录 |
+| 4 | Comment confirmed-fixed GitHub issues / 评论已修复 Issue |
+| 5 | Update `docs/IDEAS.md` / 更新创意列表 |
+| 6 | Update Claude Code auto-memory (MEMORY.md) / 更新持久记忆 |
 | 7 | `git add docs/ && git commit && git push` |
 
 ---
 
 ## Configuration / 配置
 
-Open the SKILL.md you installed and fill in the CONFIG block at the top:
+Open the installed SKILL.md and fill in the CONFIG block:
 
 ```markdown
 <!-- CONFIG
-  GITHUB_REPO  = owner/repo       e.g. myorg/myrepo
-  DOCS_DIR     = docs/
-  BRANCH       = main
+  GITHUB_REPO = owner/repo   e.g. myorg/myrepo
+  DOCS_DIR    = docs/
+  BRANCH      = main
 -->
 ```
 
-That's it. The memory path is auto-detected by Claude Code.
+Memory path is auto-detected by Claude Code — no setup needed.
 
 ---
 
-## Directory Structure / 目录结构
+## Optional: Hooks (auto-remind on commit)
+
+Copy entries from `hooks/settings-example.json` into `~/.claude/settings.json` to get:
+- **SessionStart** — injects skill reminder into Claude's context every session
+- **PreToolUse** — nudges Claude to save before `git commit`
+
+---
+
+## Directory Structure
 
 ```
 save-project-assets/
+├── install.py                              ← one-command installer
 ├── .claude-plugin/
-│   ├── plugin.json          # Plugin metadata
-│   └── marketplace.json     # Self-hosted marketplace manifest
-├── .claude/
-│   └── skills/
-│       ├── save-project-assets/       # Default (bilingual)
-│       ├── save-project-assets-zh/    # Chinese / 中文
-│       └── save-project-assets-en/    # English
-├── hooks/
-│   └── settings-example.json  # Example hook configuration
+│   ├── plugin.json
+│   └── marketplace.json
+├── .claude/skills/
+│   ├── save-project-assets/SKILL.md        ← bilingual default
+│   ├── save-project-assets-zh/SKILL.md     ← 中文
+│   └── save-project-assets-en/SKILL.md     ← English
+├── hooks/settings-example.json
 └── README.md
 ```
 
 ---
 
-## Requirements / 前置条件
+## Requirements
 
-- [Claude Code](https://claude.ai/code) CLI
-- `gh` CLI (for GitHub issue comments, optional)
-- `git` (for the commit step)
-- Your project should have a `docs/` folder (or adjust paths in SKILL.md)
+- [Claude Code](https://claude.ai/code) CLI  
+- `gh` CLI — for GitHub issue comments (optional)  
+- `git`  
+- A `docs/` folder in your project (or adjust paths in SKILL.md)
 
 ---
 
@@ -152,4 +149,4 @@ MIT — free to use, fork, and adapt.
 
 ---
 
-*Built from real-world usage on [DiskCleaner](https://github.com/mosjin/DiskCleanerSimple) — a cross-platform disk cleaning tool.*
+*Built from real-world usage on [DiskCleaner](https://github.com/mosjin/DiskCleanerSimple).*
