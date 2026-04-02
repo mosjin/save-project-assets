@@ -1,40 +1,59 @@
 # save-project-assets
 
-> **Proactively save all project knowledge at commit time or on demand.**  
-> **在提交代码时或按需主动保存所有项目知识。**
+> **在提交代码时或按需主动保存所有项目知识。**  
+> **Proactively save all project knowledge at commit time or on demand.**
 
-A [Claude Code](https://claude.ai/code) skill — captures and persists everything learned during a session:
+一个 [Claude Code](https://claude.ai/code) skill，自动持久化 AI 助手在会话中产生的所有知识：
 
-- 📋 **TECH_LOG** — engineering lessons & root-cause analyses  
-- 📝 **CHANGELOG** — feature status & fix records  
-- 💬 **GitHub Issues** — auto-comment confirmed fixes  
-- 💡 **IDEAS** — future work & improvement notes  
-- 🧠 **Memory** — persistent cross-session context  
+- 📋 **TECH_LOG** — 工程经验 & 根因分析 / Engineering lessons & root-cause analyses
+- 📝 **CHANGELOG** — 功能状态 & 修复记录 / Feature status & fix records
+- 💬 **GitHub Issues** — 自动评论已修复 Issue / Auto-comment confirmed fixes
+- 💡 **IDEAS** — 未来工作 & 改进想法 / Future work & improvement notes
+- 🧠 **Memory** — 跨会话持久上下文 / Persistent cross-session context
 
-Bilingual: **中文 (zh)** + **English (en)** + **auto-detect (default)**
+双语：**中文 (zh)** + **English (en)** + **自动识别 (default)**
 
 ---
 
-## Install / 安装
+## 安装 / Install
 
-### ✅ Easiest: one command + `/reload-plugins` (2 steps)
+### ✅ 最简方式：2 条命令（推荐）
+
+save-project-assets 以 Claude Code 插件市场的形式托管在 GitHub 上。
+
+**第一步：添加插件市场**
+
+```
+/plugin marketplace add mosjin/save-project-assets
+```
+
+**第二步：安装插件**
+
+```
+/plugin install save-project-assets
+```
+
+搞定。插件已在你的 Claude Code 会话中可用。
+
+---
+
+### 备用方式 B：一键脚本（无需在 Claude Code 内操作）
 
 ```bash
-# clone once, run once
 git clone https://github.com/mosjin/save-project-assets
 cd save-project-assets
 python install.py
 ```
 
-Then inside Claude Code: **`/reload-plugins`** — done. ✓
+然后在 Claude Code 中运行 `/reload-plugins`。
 
-To uninstall: `python install.py --remove` + `/reload-plugins`
+卸载：`python install.py --remove` + `/reload-plugins`
 
 ---
 
-### Option B: manual JSON (for power users)
+### 备用方式 C：手动 JSON
 
-Add to `~/.claude/settings.json`:
+在 `~/.claude/settings.json` 中添加：
 
 ```json
 {
@@ -49,104 +68,93 @@ Add to `~/.claude/settings.json`:
 }
 ```
 
-Then `/reload-plugins`.
+然后 `/reload-plugins`。
 
 ---
 
-### Option C: copy one file (no plugin system)
-
-```bash
-mkdir -p ~/.claude/skills/save-project-assets
-curl -o ~/.claude/skills/save-project-assets/SKILL.md \
-  https://raw.githubusercontent.com/mosjin/save-project-assets/main/.claude/skills/save-project-assets/SKILL.md
-```
-
-No reload needed — available immediately.
-
----
-
-## Usage / 使用
+## 使用 / Usage
 
 ```
-/save-project-assets        # auto language / 自动语言
+/save-project-assets        # 自动识别语言 / auto language
 /save-project-assets-zh     # 中文
 /save-project-assets-en     # English
 ```
 
-**Auto-trigger** (no command needed) when you say:  
-`save` · `record` · `保存` · `记录` · `update docs` · `update memory` · `保存资产`
+**自动触发**（无需输入命令）当你说：  
+`保存` · `记录` · `保存资产` · `更新文档` · `更新记忆`  
+`save` · `record` · `assets` · `update docs` · `update memory`
 
 ---
 
-## What It Does (7 Steps) / 七步工作流
+## 工作流（7 步）/ What It Does
 
-| Step | Action |
-|------|--------|
-| 1 | Harvest session knowledge / 采集会话知识 |
-| 2 | Update `docs/TECH_LOG.md` with lessons / 更新技术日志 |
-| 3 | Update `docs/CHANGELOG.md` with feature status / 更新变更记录 |
-| 4 | Comment confirmed-fixed GitHub issues / 评论已修复 Issue |
-| 5 | Update `docs/IDEAS.md` / 更新创意列表 |
-| 6 | Update Claude Code auto-memory (MEMORY.md) / 更新持久记忆 |
+| 步骤 | 操作 |
+|------|------|
+| 1 | 采集会话知识 / Harvest session knowledge |
+| 2 | 更新 `docs/TECH_LOG.md` 经验教训 |
+| 3 | 更新 `docs/CHANGELOG.md` 功能状态 |
+| 4 | 评论已确认修复的 GitHub Issue |
+| 5 | 更新 `docs/IDEAS.md` 新想法 |
+| 6 | 更新 Claude Code 自动记忆 (MEMORY.md) |
 | 7 | `git add docs/ && git commit && git push` |
 
 ---
 
-## Configuration / 配置
+## 配置 / Configuration
 
-Open the installed SKILL.md and fill in the CONFIG block:
+安装后打开 SKILL.md，填写顶部 CONFIG 块：
 
 ```markdown
 <!-- CONFIG
-  GITHUB_REPO = owner/repo   e.g. myorg/myrepo
+  GITHUB_REPO = owner/repo   例：myorg/myrepo
   DOCS_DIR    = docs/
   BRANCH      = main
 -->
 ```
 
-Memory path is auto-detected by Claude Code — no setup needed.
+记忆路径由 Claude Code 自动检测，无需配置。
 
 ---
 
-## Optional: Hooks (auto-remind on commit)
+## 可选：Hooks（自动提醒）
 
-Copy entries from `hooks/settings-example.json` into `~/.claude/settings.json` to get:
-- **SessionStart** — injects skill reminder into Claude's context every session
-- **PreToolUse** — nudges Claude to save before `git commit`
+将 `hooks/settings-example.json` 中的内容复制到 `~/.claude/settings.json`，可获得：
+- **SessionStart hook** — 每次会话注入 skill 提醒
+- **PreToolUse hook** — `git commit` 前自动提醒保存
 
 ---
 
-## Directory Structure
+## 目录结构 / Directory Structure
 
 ```
 save-project-assets/
-├── install.py                              ← one-command installer
+├── install.py                              ← 备用一键安装脚本
 ├── .claude-plugin/
-│   ├── plugin.json
-│   └── marketplace.json
+│   ├── plugin.json                         ← 插件元数据
+│   └── marketplace.json                    ← GitHub 插件市场清单
 ├── .claude/skills/
-│   ├── save-project-assets/SKILL.md        ← bilingual default
-│   ├── save-project-assets-zh/SKILL.md     ← 中文
-│   └── save-project-assets-en/SKILL.md     ← English
-├── hooks/settings-example.json
+│   ├── save-project-assets/SKILL.md        ← 双语默认版
+│   ├── save-project-assets-zh/SKILL.md     ← 中文版
+│   └── save-project-assets-en/SKILL.md     ← 英文版
+├── hooks/settings-example.json             ← Hook 配置示例
 └── README.md
 ```
 
 ---
 
-## Requirements
+## 前置条件 / Requirements
 
-- [Claude Code](https://claude.ai/code) CLI  
-- `gh` CLI — for GitHub issue comments (optional)  
-- `git`  
-- A `docs/` folder in your project (or adjust paths in SKILL.md)
+- [Claude Code](https://claude.ai/code) CLI
+- `gh` CLI — 用于 GitHub Issue 评论（可选）
+- `git`
+- 项目中有 `docs/` 目录（或在 SKILL.md 中调整路径）
 
 ---
 
 ## License
 
-MIT — free to use, fork, and adapt.
+MIT — 自由使用、fork 和修改。
 
 ---
 
-*Built from real-world usage on [DiskCleaner](https://github.com/mosjin/DiskCleanerSimple).*
+*从 [DiskCleaner](https://github.com/mosjin/DiskCleanerSimple) 实战中提炼而来。*
