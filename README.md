@@ -1,23 +1,22 @@
 # save-project-assets
 
-> **在提交代码时或按需主动保存所有项目知识。**  
-> **Proactively save all project knowledge at commit time or on demand.**
+> 在提交代码时或按需主动保存所有项目知识。
+
+[English](README_EN.md)
 
 一个 [Claude Code](https://claude.ai/code) skill，自动持久化 AI 助手在会话中产生的所有知识：
 
-- 📋 **TECH_LOG** — 工程经验 & 根因分析 / Engineering lessons & root-cause analyses
-- 📝 **CHANGELOG** — 功能状态 & 修复记录 / Feature status & fix records
-- 💬 **GitHub Issues** — 自动评论已修复 Issue / Auto-comment confirmed fixes
-- 💡 **IDEAS** — 未来工作 & 改进想法 / Future work & improvement notes
-- 🧠 **Memory** — 跨会话持久上下文 / Persistent cross-session context
+- 📋 **TECH_LOG** — 工程经验 & 根因分析
+- 📝 **CHANGELOG** — 功能状态 & 修复记录
+- 💬 **GitHub Issues** — 自动评论已修复 Issue
+- 💡 **IDEAS** — 未来工作 & 改进想法
+- 🧠 **Memory** — 跨会话持久上下文
 
-双语：**中文 (zh)** + **English (en)** + **自动识别 (default)**
+支持三个版本：**中文 (zh)** · **English (en)** · **自动识别 (default)**
 
 ---
 
-## 安装 / Install
-
-### ✅ 最简方式：2 条命令（推荐）
+## 安装
 
 save-project-assets 以 Claude Code 插件市场的形式托管在 GitHub 上。
 
@@ -35,9 +34,7 @@ save-project-assets 以 Claude Code 插件市场的形式托管在 GitHub 上。
 
 搞定。插件已在你的 Claude Code 会话中可用。
 
----
-
-### 备用方式 B：一键脚本（无需在 Claude Code 内操作）
+### 备用方式 B：一键脚本
 
 ```bash
 git clone https://github.com/mosjin/save-project-assets
@@ -45,11 +42,7 @@ cd save-project-assets
 python install.py
 ```
 
-然后在 Claude Code 中运行 `/reload-plugins`。
-
-卸载：`python install.py --remove` + `/reload-plugins`
-
----
+然后在 Claude Code 中运行 `/reload-plugins`。卸载：`python install.py --remove`。
 
 ### 备用方式 C：手动 JSON
 
@@ -72,25 +65,24 @@ python install.py
 
 ---
 
-## 使用 / Usage
+## 使用
 
 ```
-/save-project-assets        # 自动识别语言 / auto language
+/save-project-assets        # 自动识别语言
 /save-project-assets-zh     # 中文
 /save-project-assets-en     # English
 ```
 
-**自动触发**（无需输入命令）当你说：  
-`保存` · `记录` · `保存资产` · `更新文档` · `更新记忆`  
-`save` · `record` · `assets` · `update docs` · `update memory`
+**自动触发**（无需输入命令）当你说：`保存资产` · `更新文档` · `更新记忆` · `save assets` · `update docs` · `update memory`
 
 ---
 
-## 工作流（7 步）/ What It Does
+## 工作流（共 7 步）
 
 | 步骤 | 操作 |
 |------|------|
-| 1 | 采集会话知识 / Harvest session knowledge |
+| 0 | 内容检查——无新内容则立即退出 |
+| 1 | 采集会话知识 |
 | 2 | 更新 `docs/TECH_LOG.md` 经验教训 |
 | 3 | 更新 `docs/CHANGELOG.md` 功能状态 |
 | 4 | 评论已确认修复的 GitHub Issue |
@@ -100,7 +92,21 @@ python install.py
 
 ---
 
-## 配置 / Configuration
+## 触发条件
+
+**主动触发（无需用户明确要求）：**
+
+| 信号 | 示例 |
+|------|------|
+| 用户确认功能可用 | "可以了"、"验证通过"、"it works" |
+| 会话即将结束 / 上下文接近上限 | `/compact` 前 |
+| 功能分支合并到 main | PR 合并后 |
+
+**不触发：** 每次 `git commit`（太频繁）、模糊的"保存"/"记录"（意图不明）、测试失败时。
+
+---
+
+## 配置
 
 安装后打开 SKILL.md，填写顶部 CONFIG 块：
 
@@ -112,19 +118,20 @@ python install.py
 -->
 ```
 
-记忆路径由 Claude Code 自动检测，无需配置。
+记忆路径由 Claude Code 自动检测，无需手动配置。
 
 ---
 
-## 可选：Hooks（自动提醒）
+## 可选：Hooks
 
-将 `hooks/settings-example.json` 中的内容复制到 `~/.claude/settings.json`，可获得：
+将 `hooks/settings-example.json` 中的内容复制到 `~/.claude/settings.json`：
+
 - **SessionStart hook** — 每次会话注入 skill 提醒
-- **PreToolUse hook** — `git commit` 前自动提醒保存
+- **Stop hook** — 会话结束时提醒保存
 
 ---
 
-## 目录结构 / Directory Structure
+## 目录结构
 
 ```
 save-project-assets/
@@ -137,15 +144,16 @@ save-project-assets/
 │   ├── save-project-assets-zh/SKILL.md     ← 中文版
 │   └── save-project-assets-en/SKILL.md     ← 英文版
 ├── hooks/settings-example.json             ← Hook 配置示例
-└── README.md
+├── README.md                               ← 中文文档（本文件）
+└── README_EN.md                            ← English docs
 ```
 
 ---
 
-## 前置条件 / Requirements
+## 前置条件
 
 - [Claude Code](https://claude.ai/code) CLI
-- `gh` CLI — 用于 GitHub Issue 评论（可选）
+- `gh` CLI（用于 GitHub Issue 评论，可选）
 - `git`
 - 项目中有 `docs/` 目录（或在 SKILL.md 中调整路径）
 
@@ -153,7 +161,7 @@ save-project-assets/
 
 ## License
 
-MIT — 自由使用、fork 和修改。
+MIT
 
 ---
 

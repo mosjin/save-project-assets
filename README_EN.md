@@ -1,0 +1,168 @@
+# save-project-assets
+
+> Proactively save all project knowledge at commit time or on demand.
+
+[中文](README.md)
+
+A [Claude Code](https://claude.ai/code) skill that automatically persists all knowledge generated during a session:
+
+- 📋 **TECH_LOG** — Engineering lessons & root-cause analyses
+- 📝 **CHANGELOG** — Feature status & fix records
+- 💬 **GitHub Issues** — Auto-comment confirmed fixes
+- 💡 **IDEAS** — Future work & improvement notes
+- 🧠 **Memory** — Persistent cross-session context
+
+Three variants: **中文 (zh)** · **English (en)** · **auto-detect (default)**
+
+---
+
+## Install
+
+Hosted as a Claude Code plugin marketplace on GitHub.
+
+**Step 1: Add the marketplace**
+
+```
+/plugin marketplace add mosjin/save-project-assets
+```
+
+**Step 2: Install the plugin**
+
+```
+/plugin install save-project-assets
+```
+
+Done. The skill is now available in your Claude Code session.
+
+### Alternative B: one-command script
+
+```bash
+git clone https://github.com/mosjin/save-project-assets
+cd save-project-assets
+python install.py
+```
+
+Then run `/reload-plugins` inside Claude Code. To uninstall: `python install.py --remove`.
+
+### Alternative C: manual JSON
+
+Add to `~/.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "save-project-assets": {
+      "source": { "source": "github", "repo": "mosjin/save-project-assets" }
+    }
+  },
+  "enabledPlugins": {
+    "save-project-assets@save-project-assets": true
+  }
+}
+```
+
+Then `/reload-plugins`.
+
+---
+
+## Usage
+
+```
+/save-project-assets        # auto language
+/save-project-assets-zh     # Chinese
+/save-project-assets-en     # English
+```
+
+**Auto-triggers** (no command needed) when you say: `save assets` · `update docs` · `update memory`
+
+---
+
+## Workflow (7 steps)
+
+| Step | Action |
+|------|--------|
+| 0 | Content check — exit immediately if nothing new |
+| 1 | Harvest session knowledge |
+| 2 | Update `docs/TECH_LOG.md` with lessons |
+| 3 | Update `docs/CHANGELOG.md` with feature status |
+| 4 | Comment on confirmed-fixed GitHub issues |
+| 5 | Update `docs/IDEAS.md` with new ideas |
+| 6 | Update Claude Code auto-memory (MEMORY.md) |
+| 7 | `git add docs/ && git commit && git push` |
+
+---
+
+## Trigger Conditions
+
+**Proactive (no explicit request needed):**
+
+| Signal | Example |
+|--------|---------|
+| User confirms something works | "it works", "verified", "test passed" |
+| Session ending / context nearing full | Before `/compact` |
+| Feature branch merged to main | After PR merge |
+
+**Do NOT trigger on:** every `git commit` (too disruptive — Step 7 itself commits docs), generic "save"/"record" without clear intent, test failures, small formatting commits.
+
+---
+
+## Configuration
+
+Open the installed SKILL.md and fill in the CONFIG block at the top:
+
+```markdown
+<!-- CONFIG
+  GITHUB_REPO = owner/repo   e.g. myorg/myrepo
+  DOCS_DIR    = docs/
+  BRANCH      = main
+-->
+```
+
+Memory path is auto-detected by Claude Code — no setup needed.
+
+---
+
+## Optional: Hooks
+
+Copy entries from `hooks/settings-example.json` into `~/.claude/settings.json`:
+
+- **SessionStart hook** — injects a skill reminder into Claude's context every session
+- **Stop hook** — reminds Claude to save when the session ends
+
+---
+
+## Directory Structure
+
+```
+save-project-assets/
+├── install.py                              ← fallback one-command installer
+├── .claude-plugin/
+│   ├── plugin.json                         ← plugin metadata
+│   └── marketplace.json                    ← GitHub marketplace manifest
+├── .claude/skills/
+│   ├── save-project-assets/SKILL.md        ← bilingual default
+│   ├── save-project-assets-zh/SKILL.md     ← Chinese
+│   └── save-project-assets-en/SKILL.md     ← English
+├── hooks/settings-example.json             ← hook configuration example
+├── README.md                               ← 中文文档
+└── README_EN.md                            ← English docs (this file)
+```
+
+---
+
+## Requirements
+
+- [Claude Code](https://claude.ai/code) CLI
+- `gh` CLI (for GitHub issue comments, optional)
+- `git`
+- A `docs/` folder in your project (or adjust paths in SKILL.md)
+
+---
+
+## License
+
+MIT
+
+---
+
+*Extracted from real-world usage on [DiskCleaner](https://github.com/mosjin/DiskCleanerSimple).*
