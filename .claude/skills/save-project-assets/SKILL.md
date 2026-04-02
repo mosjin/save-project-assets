@@ -1,6 +1,6 @@
 ---
 name: save-project-assets
-description: Use proactively before git commits, after fixing issues, or when user asks to "save", "record", "保存", "记录", "update docs", or "update memory". Saves all project knowledge — TECH_LOG lessons, CHANGELOG status, GitHub issue comments, IDEAS, and persistent memory.
+description: Use proactively when user confirms something works ("it works", "verified", "已修复"), before session ends / context compaction, or when user explicitly asks ("save assets", "save project", "保存资产", "update docs", "update memory"). Do NOT trigger on every git commit — only when there is new knowledge worth persisting.
 ---
 
 # Save Project Assets
@@ -20,13 +20,48 @@ Capture and persist all knowledge generated in this session: engineering lessons
 
 **Announce at start:** "Saving project assets… / 正在保存项目资产…"
 
-**Trigger conditions (run proactively without being asked):**
-- Before or after `git commit` / `git push`
-- After a GitHub issue is confirmed fixed by the user
-- After a feature is verified working
-- When user says: save · record · assets · update docs · update memory · 保存 · 记录 · 保存资产 · 更新文档 · 更新记忆
+---
+
+### Trigger Conditions — When to Run
+
+**✅ Run proactively (without being asked):**
+| Signal | Example |
+|--------|---------|
+| User confirms something works | "it works", "verified", "test passed", "已修复", "验证通过" |
+| Session ending / context nearing full | Before `/compact`, before long pause |
+| Feature branch merged to main | After `git merge` or PR merged |
+
+**✅ Run on explicit request:**
+| Phrase | Intent |
+|--------|--------|
+| "save assets" / "save project" / "保存资产" | Full 7-step save |
+| "update docs" / "更新文档" | Steps 2-3-7 only |
+| "update memory" / "更新记忆" | Step 6 only |
+| "/save-project-assets" | Direct invocation |
+
+**❌ Do NOT trigger on:**
+- Every `git commit` or `git push` — too disruptive, Step 7 itself commits docs
+- Generic "save" / "record" / "记录" without clear intent — too ambiguous
+- Test failures or work-in-progress — nothing confirmed yet
+- Small refactor / formatting commits — no new knowledge
+
+---
 
 **Session start:** Silently load MEMORY.md to restore context. Do not announce unless asked.
+
+---
+
+## Step 0: Content Check (fast gate)
+
+Before doing anything, answer these questions:
+
+- Did this session produce **new** engineering lessons, fixes, or architectural decisions?
+- Did the user **confirm** something works?
+- Are there **new** ideas or status changes not yet in docs/memory?
+
+**If all answers are NO → stop immediately.** Say: "Nothing new to save this session."
+
+Only continue to Step 1 if at least one answer is YES.
 
 ---
 

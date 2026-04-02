@@ -13,14 +13,12 @@
         ]
       }
     ],
-    "PreToolUse": [
+    "Stop": [
       {
-        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "if": "Bash(git commit*)",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"[save-project-assets reminder] Before committing: consider running /save-project-assets to update TECH_LOG, CHANGELOG, memory, and comment on fixed GitHub issues.\"}}'",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"[save-project-assets] Session ending — if new lessons, confirmed fixes, or ideas were produced this session, consider running /save-project-assets before closing.\"}}'",
             "timeout": 3,
             "async": true
           }

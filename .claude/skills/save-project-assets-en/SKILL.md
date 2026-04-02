@@ -1,6 +1,6 @@
 ---
 name: save-project-assets-en
-description: Use proactively before git commits, after fixing issues, or when user asks to "save", "record", "save assets", "update docs", or "update memory". Saves all project knowledge — TECH_LOG lessons, CHANGELOG status, GitHub issue comments, IDEAS, and persistent memory.
+description: Use proactively when user confirms something works ("it works", "verified", "test passed"), before session ends / context compaction, or when user explicitly asks ("save assets", "save project", "update docs", "update memory"). Do NOT trigger on every git commit — only when there is new knowledge worth persisting.
 ---
 
 # Save Project Assets
@@ -20,13 +20,46 @@ Capture and persist all knowledge generated in this session: engineering lessons
 
 **Announce at start:** "Saving project assets..."
 
-**Trigger conditions (run proactively without being asked):**
-- Before or after `git commit` / `git push`
-- After a GitHub issue is confirmed fixed by the user
-- After a feature is verified working
-- When user says: save · record · assets · update docs · update memory
+### Trigger Conditions
+
+**✅ Run proactively (without being asked):**
+| Signal | Example |
+|--------|---------|
+| User confirms something works | "it works", "verified", "test passed", "confirmed" |
+| Session ending / context nearing full | Before `/compact`, before long pause |
+| Feature branch merged to main | After `git merge` or PR merged |
+
+**✅ Run on explicit request:**
+| Phrase | Scope |
+|--------|-------|
+| "save assets" / "save project" | Full 7 steps |
+| "update docs" | Steps 2-3-7 only |
+| "update memory" | Step 6 only |
+| `/save-project-assets-en` | Direct invocation |
+
+**❌ Do NOT trigger on:**
+- Every `git commit` / `git push` — too disruptive; Step 7 itself commits docs
+- Generic "save" / "record" without clear intent — too ambiguous
+- Test failures or work-in-progress — nothing confirmed yet
+- Small refactor / formatting commits — no new knowledge
+
+---
 
 **Session start:** Silently load MEMORY.md to restore context. Do not announce unless asked.
+
+---
+
+## Step 0: Content Check (fast gate)
+
+Before doing anything, answer:
+
+- Did this session produce **new** lessons, fixes, or architectural decisions?
+- Did the user **explicitly confirm** something works?
+- Are there **new** ideas or status changes not yet in docs/memory?
+
+**If all NO → stop immediately.** Say: "Nothing new to save this session."
+
+Continue only if at least one answer is YES.
 
 ---
 
